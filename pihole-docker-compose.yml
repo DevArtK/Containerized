@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "85:80/tcp"
+      - "443:443" # Web UI over SSL
+    environment:
+      TZ: ${TZ}
+      WEBPASSWORD: ${WEBPASSWORD}
+      WEBTHEME: 'default-darker'
+    volumes:
+      - '/opt/pihole:/etc/pihole'
+      - '/opt/dnsmasq.d:/etc/dnsmasq.d'
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+      # - 9.9.9.9 # Quad 9
+      # - 149.123.123.112 # Quad 9 backup
+    env_file:
+      - ./.env
+    restart: unless-stopped
