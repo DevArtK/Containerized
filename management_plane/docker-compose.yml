@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+
+  homepage:
+    image: ghcr.io/benphelps/homepage:latest
+    container_name: homepage
+    ports:
+      - 9001:3000
+    volumes:
+      - ~/.config/homepage:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock:ro # (optional) For docker integrations
+    restart: unless-stopped
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    ports:
+      - "9000:9000/tcp"
+    env_file:
+      - ./.env
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/portianer:/data
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    volumes:
+      - /opt/kuma:/app/data
+    ports:
+      - 3001:3001
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
